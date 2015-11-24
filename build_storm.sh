@@ -2,16 +2,16 @@
 set -e
 set -u
 name=storm
-version=0.9.0.1
+version=0.10.0
 description="Storm is a distributed realtime computation system. Similar to how Hadoop provides a set of general primitives
 for doing batch processing, Storm provides a set of general primitives for doing realtime computation. Storm is simple, can
 be used with any programming language, is used by many companies, and is a lot of fun to use!"
-url="http://storm-project.net"
+url="http://storm.apache.org/"
 arch="all"
 section="misc"
-package_version="~2"
-src_package="storm-${version}.zip"
-download_url="https://dl.dropboxusercontent.com/s/dj86w8ojecgsam7/storm-0.9.0.1.zip"
+package_version="~3"
+src_package="apache-storm-${version}.zip"
+download_url="http://mirror.symnds.com/software/Apache/storm/apache-storm-0.10.0/apache-storm-0.10.0.zip"
 origdir="$(pwd)"
 storm_root_dir=/usr/lib/storm
 #use old debian init.d scripts or ubuntu upstart
@@ -41,22 +41,24 @@ else
   mkdir -p build/etc/init
 fi
 mkdir -p build/var/log/storm
+mkdir -p build/var/lib/storm
 
-unzip ${origdir}/storm-${version}.zip
-rm -rf storm-${version}/logs
-rm -rf storm-${version}/log4j
-rm -rf storm-${version}/conf
-cp -R storm-${version}/* build${storm_root_dir}
+unzip ${origdir}/${src_package}
+rm -rf apache-storm-${version}/logs
+rm -rf apache-storm-${version}/log4j
+rm -rf apache-storm-${version}/conf
+cp -R apache-storm-${version}/* build${storm_root_dir}
 
 cd build
 cp ${origdir}/storm ${origdir}/storm-nimbus ${origdir}/storm-supervisor ${origdir}/storm-ui ${origdir}/storm-drpc etc/default
 cp ${origdir}/storm.yaml etc/storm
 cp ${origdir}/storm.log.properties etc/storm
 if [ $dist == "debian" ]; then
-  cp ${origdir}/init.d/storm-nimbus ${origdir}/init.d/storm-supervisor ${origdir}/init.d/storm-ui ${origdir}/init.d/storm-drpc etc/init.d
+  cp ${origdir}/init.d/storm-nimbus ${origdir}/init.d/storm-logviewer ${origdir}/init.d/storm-supervisor ${origdir}/init.d/storm-ui ${origdir}/init.d/storm-drpc etc/init.d
 else
-  cp ${origdir}/storm-nimbus.conf ${origdir}/storm-supervisor.conf ${origdir}/storm-ui.conf ${origdir}/storm-drpc.conf etc/init
+  cp ${origdir}/storm-nimbus.conf ${origdir}/storm-logviewer.conf ${origdir}/storm-supervisor.conf ${origdir}/storm-ui.conf ${origdir}/storm-drpc.conf etc/init
 fi 
+
 
 #_ MAKE DEBIAN _#
 fpm -t deb \
@@ -72,7 +74,7 @@ fpm -t deb \
     --after-install ${origdir}/after_install.sh \
     --after-remove ${origdir}/after_remove.sh \
     --prefix=/ \
-    -d "libzmq0 >= 3.2.2" -d "libjzmq >= 2.1.0" -d "unzip" \
+    -d "libzmq3 >= 3.1.3" -d "libjzmq >= 2.1.0" -d "unzip" \
     -s dir \
     -- .
 mv storm*.deb ${origdir}

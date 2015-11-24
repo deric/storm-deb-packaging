@@ -1,9 +1,46 @@
 #!/bin/sh
+# postinst script for storm
 
 set -e
 
-#DEBHELPER#
+# summary of how this script can be called:
+#        * <postinst> `configure' <most-recently-configured-version>
+#        * <old-postinst> `abort-upgrade' <new version>
+#        * <conflictor's-postinst> `abort-remove' `in-favour' <package>
+#          <new-version>
+#        * <postinst> `abort-remove'
+#        * <deconfigured's-postinst> `abort-deconfigure' `in-favour'
+#          <failed-install-package> <version> `removing'
+#          <conflicting-package> <version>
+# for details, see http://www.debian.org/doc/debian-policy/ or
+# the debian-policy package
 
-[ "$1" = "configure" ] && ldconfig
+
+case "$1" in
+    configure)
+        if ! getent group storm > /dev/null 2>&1
+        then
+            echo "Creating system group: storm"
+            addgroup --system storm
+        fi
+
+        if ! getent passwd storm > /dev/null 2>&1; then
+            echo "Creating system user: storm"
+            useradd --create-home --gid storm --shell /bin/sh storm
+        fi
+        update-rc.d storm defaults
+        invoke-rc.d storm start
+    ;;
+
+    abort-upgrade|abort-remove|abort-deconfigure)
+    ;;
+
+    *)
+        echo "postinst called with unknown argument \`$1'" >&2
+        exit 1
+    ;;
+esac
+
+#DEBHELPER#
 
 exit 0

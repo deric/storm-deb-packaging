@@ -1,3 +1,3 @@
 #!/bin/sh
-#/usr/sbin/deluser storm
+/usr/sbin/deluser storm
 

@@ -1,8 +1,8 @@
 # /etc/default/storm-supervisor
 
 #_ START? _#
-ENABLE="no"
+ENABLE="yes"
 
 #_ SUPERVISOR _#
 STORM_SUPERVISOR_JVM_MEMORY="1024m"
-STORM_SUPERVISOR_JVM_OPTS="-Dlog4j.configuration=file:/etc/storm/storm.log.properties -Dlogfile.name=supervisor.log"
+STORM_SUPERVISOR_JVM_OPTS="-Dstorm.log.dir=/var/log/storm -Dlog4j.configurationFile=/usr/lib/storm/log4j2/cluster.xml  -Dlogfile.name=supervisor.log"
